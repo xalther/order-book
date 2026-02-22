@@ -71,4 +71,16 @@ public class Order {
         }
         this.remainingQuantity -= quantity;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId=" + orderId +
+                ", side=" + side +
+                ", orderType=" + orderType +
+                ", price=" + price +
+                ", initialQuantity=" + initialQuantity +
+                ", remainingQuantity=" + remainingQuantity +
+                '}';
+    }
 }

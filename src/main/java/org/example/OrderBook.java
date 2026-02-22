@@ -19,37 +19,52 @@ public class OrderBook {
 
     public List<Trade> matchingEngine() {
         List<Trade> trades = new ArrayList<>();
-            while (!asks.isEmpty() && !bids.isEmpty() && bids.firstKey() >= asks.firstKey()) {
-               ArrayDeque<Order> askQue = asks.firstEntry().getValue();
-               ArrayDeque<Order> bidQue = bids.firstEntry().getValue();
+        while (!asks.isEmpty() && !bids.isEmpty() && bids.firstKey() >= asks.firstKey())    {
+            ArrayDeque<Order> askQue = asks.firstEntry().getValue();
+            ArrayDeque<Order> bidQue = bids.firstEntry().getValue();
 
-               Order ask = askQue.peekFirst();
-               Order bid = bidQue.peekFirst();
+            Order ask = askQue.peekFirst();
+            Order bid = bidQue.peekFirst();
 
 
-                int quantity = Math.min(ask.getRemainingQuantity(), bid.getRemainingQuantity());
-                ask.fill(quantity);
-                bid.fill(quantity);
+            int quantity = Math.min(ask.getRemainingQuantity(), bid.getRemainingQuantity());
+            ask.fill(quantity);
+            bid.fill(quantity);
 
-                if (ask.getRemainingQuantity() == 0) {
-                    askQue.pollFirst();
-                }
-                if (askQue.isEmpty()) {
-                    asks.pollFirstEntry();
-                }
-
-                if (bid.getRemainingQuantity() == 0) {
-                    bidQue.pollFirst();
-                }
-                if (bidQue.isEmpty()) {
-                    bids.pollFirstEntry();
-                }
-                TradeInfo askTradeInfo = new TradeInfo(ask.getOrderId(), ask.getRemainingQuantity(), ask.getPrice());
-                TradeInfo bidTradeInfo = new TradeInfo(bid.getOrderId(), bid.getRemainingQuantity(), bid.getPrice());
-                Trade trade = new Trade(bidTradeInfo, askTradeInfo);
-                trades.add(trade);
+            if (ask.getRemainingQuantity() == 0) {
+                askQue.pollFirst();
             }
+            if (askQue.isEmpty()) {
+                asks.pollFirstEntry();
+            }
+
+            if (bid.getRemainingQuantity() == 0) {
+                bidQue.pollFirst();
+            }
+            if (bidQue.isEmpty()) {
+                bids.pollFirstEntry();
+            }
+            TradeInfo askTradeInfo = new TradeInfo(ask.getOrderId(), ask.getRemainingQuantity(), ask.getPrice());
+            TradeInfo bidTradeInfo = new TradeInfo(bid.getOrderId(), bid.getRemainingQuantity(), bid.getPrice());
+            Trade trade = new Trade(bidTradeInfo, askTradeInfo);
+            trades.add(trade);
+        }
         return trades;
+    }
+
+    public void addNewOrder(Order order) {
+        var orderId = order.getOrderId();
+        if (orders.containsKey(orderId)) return;
+
+        if (order.getSide() == Side.BUY) {
+            bids.computeIfAbsent(order.getPrice(), price -> new ArrayDeque<>()).add(order);
+        } else {
+            asks.computeIfAbsent(order.getPrice(), price -> new ArrayDeque<>()).add(order);
+        }
+        orders.put(orderId, order);
+        System.out.println("Asks: " + asks);
+        System.out.println("Bids: " + bids);
+        System.out.println("Orders: " + orders);
     }
 
 }
