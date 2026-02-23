@@ -1,8 +1,13 @@
 package org.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 public class OrderBook {
+    private final static Logger logger = LoggerFactory.getLogger(OrderBook.class);
+
     private final TreeMap<Double, ArrayDeque<Order>> asks = new TreeMap<>();
     private final TreeMap<Double, ArrayDeque<Order>> bids = new TreeMap<>(Comparator.reverseOrder());
     private final Map<Integer, Order> orders = new HashMap<>();
@@ -19,13 +24,12 @@ public class OrderBook {
 
     public List<Trade> matchingEngine() {
         List<Trade> trades = new ArrayList<>();
-        while (!asks.isEmpty() && !bids.isEmpty() && bids.firstKey() >= asks.firstKey())    {
+        while (!asks.isEmpty() && !bids.isEmpty() && bids.firstKey() >= asks.firstKey()) {
             ArrayDeque<Order> askQue = asks.firstEntry().getValue();
             ArrayDeque<Order> bidQue = bids.firstEntry().getValue();
 
             Order ask = askQue.peekFirst();
             Order bid = bidQue.peekFirst();
-
 
             int quantity = Math.min(ask.getRemainingQuantity(), bid.getRemainingQuantity());
             ask.fill(quantity);
@@ -33,6 +37,7 @@ public class OrderBook {
 
             if (ask.getRemainingQuantity() == 0) {
                 askQue.pollFirst();
+                logger.info("matchingEngine(): Ask order {} filled and removed from que", ask);
             }
             if (askQue.isEmpty()) {
                 asks.pollFirstEntry();
@@ -40,6 +45,7 @@ public class OrderBook {
 
             if (bid.getRemainingQuantity() == 0) {
                 bidQue.pollFirst();
+                logger.info("matchingEngine(): Bid order {} filled and removed from que", bid);
             }
             if (bidQue.isEmpty()) {
                 bids.pollFirstEntry();
@@ -54,7 +60,12 @@ public class OrderBook {
 
     public void addNewOrder(Order order) {
         var orderId = order.getOrderId();
-        if (orders.containsKey(orderId)) return;
+
+        if (orders.containsKey(orderId)) {
+            logger.warn("addNewOrder(): Adding new order failed: Order Id {} already exists", order.getOrderId());
+            return;
+        }
+        logger.info("addNewOrder(): Adding new order: {}", order);
 
         if (order.getSide() == Side.BUY) {
             bids.computeIfAbsent(order.getPrice(), price -> new ArrayDeque<>()).add(order);
@@ -62,9 +73,12 @@ public class OrderBook {
             asks.computeIfAbsent(order.getPrice(), price -> new ArrayDeque<>()).add(order);
         }
         orders.put(orderId, order);
-        System.out.println("Asks: " + asks);
-        System.out.println("Bids: " + bids);
-        System.out.println("Orders: " + orders);
-    }
 
+        logger.info("addNewOrder(): New order added, orders: {}", orders);
+        logger.info("addNewOrder(): Asks: {}", asks);
+        logger.info("addNewOrder(): Bids: {}", bids);
+
+        List<Trade> trades = matchingEngine();
+        if (!trades.isEmpty()) logger.info("addNewOrder(): Filled transaction: {}", trades);
+    }
 }

@@ -10,7 +10,7 @@ public class Main {
                         Side.BUY,
                         OrderType.FillAndKill,
                         25.0,
-                        10
+                        15
                 )
         );
         orderBook.addNewOrder(

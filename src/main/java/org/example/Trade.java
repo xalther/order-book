@@ -1,8 +1,8 @@
 package org.example;
 
 public class Trade {
-    private TradeInfo bidsTrade;
-    private TradeInfo asksTrade;
+    private final TradeInfo bidsTrade;
+    private final TradeInfo asksTrade;
 
     public Trade(TradeInfo bidsTrade, TradeInfo asksTrade) {
         this.bidsTrade = bidsTrade;
@@ -15,5 +15,13 @@ public class Trade {
 
     public TradeInfo getBidsTrade() {
         return bidsTrade;
+    }
+
+    @Override
+    public String toString() {
+        return "Trade{" +
+                "bidsTrade=" + bidsTrade +
+                ", asksTrade=" + asksTrade +
+                '}';
     }
 }
