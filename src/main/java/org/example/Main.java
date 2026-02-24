@@ -1,26 +1,31 @@
 package org.example;
 
+import org.example.constants.Side;
+import org.example.core.OrderBook;
+import org.example.utils.MockData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
-        OrderBook orderBook = new OrderBook();
-        orderBook.addNewOrder(
-                new Order(
-                        1,
-                        Side.BUY,
-                        OrderType.FillAndKill,
-                        25.0,
-                        15
-                )
-        );
-        orderBook.addNewOrder(
-                new Order(
-                        2,
-                        Side.SELL,
-                        OrderType.FillAndKill,
-                        25.0,
-                        10
-                )
-        );
+        testSimpleMatch();
+        testNoMatch();
+    }
+
+    private static void testSimpleMatch() {
+        logger.info("Simple match test");
+        OrderBook book = new OrderBook();
+
+        book.addNewOrder(MockData.createNewOrder(Side.BUY, 100.0, 15));
+        book.addNewOrder(MockData.createNewOrder(Side.SELL, 100.0, 10));
+    }
+
+    private static void testNoMatch() {
+        logger.info("No match test");
+        OrderBook book = new OrderBook();
+
+        book.addNewOrder(MockData.createNewOrder(Side.BUY, 95.0, 10));
+        book.addNewOrder(MockData.createNewOrder(Side.SELL, 105.0, 10));
     }
 }

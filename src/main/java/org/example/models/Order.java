@@ -1,4 +1,7 @@
-package org.example;
+package org.example.models;
+
+import org.example.constants.OrderType;
+import org.example.constants.Side;
 
 public class Order {
     private final int orderId;

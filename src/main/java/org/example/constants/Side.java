@@ -1,4 +1,4 @@
-package org.example;
+package org.example.constants;
 
 public enum Side {
     BUY,

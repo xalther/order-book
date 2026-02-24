@@ -1,5 +1,9 @@
-package org.example;
+package org.example.core;
 
+import org.example.constants.Side;
+import org.example.models.Order;
+import org.example.models.Trade;
+import org.example.models.TradeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
