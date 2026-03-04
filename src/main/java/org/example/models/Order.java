@@ -3,6 +3,8 @@ package org.example.models;
 import org.example.constants.OrderType;
 import org.example.constants.Side;
 
+import java.util.Objects;
+
 public class Order {
     private final int orderId;
     private final Side side;
@@ -61,5 +63,17 @@ public class Order {
                 ", initialQuantity=" + initialQuantity +
                 ", remainingQuantity=" + remainingQuantity +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return orderId == order.orderId && Double.compare(price, order.price) == 0 && initialQuantity == order.initialQuantity && remainingQuantity == order.remainingQuantity && side == order.side && orderType == order.orderType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId, side, orderType, price, initialQuantity, remainingQuantity);
     }
 }

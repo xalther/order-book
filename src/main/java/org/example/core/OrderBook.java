@@ -41,6 +41,7 @@ public class OrderBook {
 
             if (ask.getRemainingQuantity() == 0) {
                 askQue.pollFirst();
+                orders.remove(ask.getOrderId());
                 logger.info("matchingEngine(): Ask order {} filled and removed from que", ask);
             }
             if (askQue.isEmpty()) {
@@ -49,6 +50,7 @@ public class OrderBook {
 
             if (bid.getRemainingQuantity() == 0) {
                 bidQue.pollFirst();
+                orders.remove(bid.getOrderId());
                 logger.info("matchingEngine(): Bid order {} filled and removed from que", bid);
             }
             if (bidQue.isEmpty()) {
@@ -59,6 +61,7 @@ public class OrderBook {
             Trade trade = new Trade(bidTradeInfo, askTradeInfo);
             trades.add(trade);
         }
+        logger.info("matchingEngine(): Orders: {}", orders);
         return trades;
     }
 
@@ -84,5 +87,28 @@ public class OrderBook {
 
         List<Trade> trades = matchingEngine();
         if (!trades.isEmpty()) logger.info("addNewOrder(): Filled transaction: {}", trades);
+    }
+
+    public void cancelOrder(Order order) {
+        Order existingOrder = orders.get(order.getOrderId());
+        if (existingOrder == null) return;
+
+        if (order.getSide() == Side.BUY) {
+            orders.remove(existingOrder.getOrderId());
+            ArrayDeque<Order> bidQue = bids.get(existingOrder.getPrice());
+            bidQue.remove(existingOrder);
+
+            if (bidQue.isEmpty()) bids.remove(existingOrder.getPrice());
+            logger.info("cancelOrder(): Removed order from bids que");
+        } else {
+            orders.remove(existingOrder.getOrderId());
+            ArrayDeque<Order> askQue = asks.get(existingOrder.getPrice());
+            askQue.remove(existingOrder);
+
+            if (askQue.isEmpty()) asks.remove(existingOrder.getPrice());
+            logger.info("cancelOrder(): Removed order from ask que");
+        }
+        logger.info("cancelOrder(): All orders: {}", orders);
+        logger.info("cancelOrder(): Bids: {}, Asks: {}", bids, asks);
     }
 }
