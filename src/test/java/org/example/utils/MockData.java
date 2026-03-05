@@ -5,23 +5,29 @@ import org.example.constants.Side;
 import org.example.models.Order;
 
 public final class MockData {
-    private static int idCounter = 1;
-
     private MockData() {
         throw new AssertionError();
     }
 
-    public static Order createNewOrder(Side side, double price, int quantity) {
+    private static int idCounter = 1;
+
+    public static Order createBuyOrder(double price, int quantity) {
         return new Order(
                 idCounter++,
-                side,
+                Side.BUY,
                 OrderType.GoodTillCancelled,
                 price,
                 quantity
         );
     }
 
-
-
-
+    public static Order createSellOrder(double price, int quantity) {
+        return new Order(
+                idCounter++,
+                Side.SELL,
+                OrderType.GoodTillCancelled,
+                price,
+                quantity
+        );
+    }
 }

@@ -16,6 +16,10 @@ public class OrderBook {
     private final TreeMap<Double, ArrayDeque<Order>> bids = new TreeMap<>(Comparator.reverseOrder());
     private final Map<Integer, Order> orders = new HashMap<>();
 
+    Map<Integer, Order> getOrders() {
+        return Collections.unmodifiableMap(orders);
+    }
+
     private boolean canMatchNewOrder(Side side, double price) {
         if (side == Side.BUY) {
             if (asks.isEmpty()) return false;
