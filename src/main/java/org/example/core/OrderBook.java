@@ -16,7 +16,7 @@ public class OrderBook {
     private final TreeMap<Double, ArrayDeque<Order>> bids = new TreeMap<>(Comparator.reverseOrder());
     private final Map<Integer, Order> orders = new HashMap<>();
 
-    Map<Integer, Order> getOrders() {
+    public Map<Integer, Order> getOrders() {
         return Collections.unmodifiableMap(orders);
     }
 
@@ -114,5 +114,18 @@ public class OrderBook {
         }
         logger.info("cancelOrder(): All orders: {}", orders);
         logger.info("cancelOrder(): Bids: {}, Asks: {}", bids, asks);
+    }
+
+    public void printOrderBook() {
+        System.out.println("\n=== Bid ===");
+        bids.forEach((price, bidOrders) -> {
+            int bidSize = bidOrders.stream().mapToInt(Order::getRemainingQuantity).sum();
+            System.out.println("Size: " + bidSize + " Price: " + "$" + price);
+        });
+        System.out.println("\n=== Ask ===");
+        asks.forEach((price, askOrders) -> {
+            int askSize = askOrders.stream().mapToInt(Order::getRemainingQuantity).sum();
+            System.out.println("Size: " + askSize + " Price: " + "$" + price);
+        });
     }
 }
